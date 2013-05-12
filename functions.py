@@ -6,4 +6,4 @@ from subprocess import call
 def shutdown(lcd):
     lcd.clear()
     lcd.write_string('Goodbye.')
-    call('sudo init 0')
+    call('sudo init 0', shell=True)
