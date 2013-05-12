@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo $VIRTUAL_ENV/bin/python $1
