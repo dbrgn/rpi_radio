@@ -61,7 +61,7 @@ class Observable(object):
 
     def notify_observers(self):
         for observer in self._observers:
-            observer.update(self)
+            observer.update()
 
 
 class MenuScreen(Observable):
@@ -169,7 +169,8 @@ class Player(object):
         self.load_menu(self.current_menu.menulist)
 
     def run_action(self):
-        item = self.current_menu[self.menu_pos]
+        item = self.current_menu.menulist[self.current_menu.menu_pos]
+
         function = item[-1]
         function(self.lcd)
 
