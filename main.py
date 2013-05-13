@@ -28,12 +28,16 @@ submenu = [
     ('Hauraki', nop, None),
 ]
 
+submenu_foo = [
+    ('SubFoo1', nop, None),
+    ('Hauraki', nop, None),
+]
+
 mainmenu = [
     ('Radio', nop, MenuScreen(previous=None, menulist=submenu)),
     ('Shutdown', shutdown, None),
-    ('Foo', nop, None),
+    ('Foo', nop, MenuScreen(previous=None, menulist=submenu_foo)),
     ('Bar', nop, None),
-    ('Baz', nop, None),
 ]
 
 
@@ -132,6 +136,7 @@ class Player(object):
         new_menu = item[-1]
         if new_menu is not None:  # If a MenuScreen is registered
             self.current_menu.remove_observer(self)
+            new_menu.previous = self.current_menu
             self.current_menu = item[-1]
             self.current_menu.add_observer(self)
 
@@ -148,6 +153,8 @@ class Player(object):
         self.current_menu.remove_observer(self)
         if self.current_menu.previous is None:  #Already on the Root level
             self.current_menu = MenuScreen(previous=None, menulist=mainmenu)
+        else:
+            self.current_menu = self.current_menu.previous
         self.current_menu.add_observer(self)
         self.redraw()
 
