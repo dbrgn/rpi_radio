@@ -15,3 +15,5 @@ ROTARY_PIN_BUTTON = 4
 # Magic numbers
 LCD_COLS = 20
 LCD_ROWS = 4
+
+BUTTON_PIN_BACK = 11

@@ -22,7 +22,6 @@ class MenuScreen(Observable):
         newpos = clamp(value, 0, settings.LCD_ROWS - 1)
         self._menu_pos = newpos
         if oldpos != newpos:
-            print("notifying observers")
             self.notify_observers()
             """self.lcd.cursor_pos = (oldpos, 0)
             self.lcd.write_string(self.menu_prefix)

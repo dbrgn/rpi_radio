@@ -22,10 +22,10 @@ def nop(*args):
     pass
 
 
-# (Text, function, menulist)
+# (Text, function, next MenuScreen)
 submenu = [
-    ('Sub1', nop, None),
-    ('Sub2', nop, None),
+    ('Station 1', nop, None),
+    ('Hauraki', nop, None),
 ]
 
 mainmenu = [
@@ -54,6 +54,10 @@ class RotaryEncoder(object):
                                     edge='falling', pull_up_down=RPIO.PUD_UP,
                                     debounce_timeout_ms=15)
 
+        RPIO.add_interrupt_callback(settings.BUTTON_PIN_BACK, self.button_back_pressed, edge='falling',
+                                    pull_up_down=RPIO.PUD_UP,
+                                    debounce_timeout_ms=15)
+
     def process_movement(self, gpio_id, value):
         pin_b = RPIO.input(settings.ROTARY_PIN_B)
         if pin_b:  # Down
@@ -63,6 +67,10 @@ class RotaryEncoder(object):
 
     def button_pressed(self, gpio_id, value):
         self.player.run_action()
+
+    def button_back_pressed(self, gpio_id, value):
+        print("back button pressed")
+        self.player.back()
 
 
 class Player(object):
@@ -121,9 +129,13 @@ class Player(object):
 
         function = item[-2]
         function(self.lcd)
-        self.current_menu.remove_observer(self)
-        self.current_menu = item[-1]
-        self.current_menu.add_observer(self)
+        new_menu = item[-1]
+        if new_menu is not None:  # If a MenuScreen is registered
+            self.current_menu.remove_observer(self)
+            old_menu = self.current_menu
+            self.current_menu = item[-1]
+            self.current_menu.previous = old_menu
+            self.current_menu.add_observer(self)
 
         #Update Screen with submenu
         self.redraw()
@@ -133,6 +145,13 @@ class Player(object):
 
     def scroll_down(self):
         self.current_menu.menu_pos += 1
+
+    def back(self):
+        self.current_menu.remove_observer(self)
+        if self.current_menu.previous is None:  #Already on the Root level
+            self.current_menu = MenuScreen(previous=None, menulist=mainmenu)
+        self.current_menu.add_observer(self)
+        self.redraw()
 
 
 if __name__ == '__main__':
