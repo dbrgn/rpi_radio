@@ -132,9 +132,7 @@ class Player(object):
         new_menu = item[-1]
         if new_menu is not None:  # If a MenuScreen is registered
             self.current_menu.remove_observer(self)
-            old_menu = self.current_menu
             self.current_menu = item[-1]
-            self.current_menu.previous = old_menu
             self.current_menu.add_observer(self)
 
         #Update Screen with submenu
