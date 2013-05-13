@@ -1,5 +1,7 @@
 from utils import Observable
 from utils import clamp
+import settings
+
 
 class MenuScreen(Observable):
     """Represents a List with menu entries"""
@@ -17,7 +19,7 @@ class MenuScreen(Observable):
     @menu_pos.setter
     def menu_pos(self, value):
         oldpos = self._menu_pos
-        newpos = clamp(value, 0, LCD_ROWS - 1)
+        newpos = clamp(value, 0, settings.LCD_ROWS - 1)
         self._menu_pos = newpos
         if oldpos != newpos:
             print("notifying observers")

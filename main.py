@@ -16,17 +16,6 @@ from utils import clamp
 
 # Pin configuration
 NUMBERING_MODE = RPIO.BCM
-PIN_LCD_RS = 10
-PIN_LCD_RW = None
-PIN_LCD_E = 7
-PIN_LCD_DATA = [9, 25, 11, 8]
-PIN_ROTARY_A = 2
-PIN_ROTARY_B = 3
-PIN_ROTARY_BTN = 24
-
-# Magic numbers
-LCD_COLS = 20
-LCD_ROWS = 4
 
 
 def nop(*args):
@@ -122,7 +111,7 @@ class Player(object):
                 line = self.menu_selected + label
             else:
                 line = self.menu_prefix + label
-            self.lcd.write_string(line[:LCD_COLS] + '\n\r')
+            self.lcd.write_string(line[:settings.LCD_COLS] + '\n\r')
 
     def redraw(self):
         self.load_menu(self.current_menu.menulist)
