@@ -4,6 +4,8 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 import time
 
 import RPIO
+
+import settings
 from RPLCD import CharLCD
 
 from functions import shutdown
@@ -37,24 +39,79 @@ mainmenu = [
     ('Baz', nop),
 ]
 
+submenu = [
+    ('Sub1', nop),
+    ('Sub2', nop),
+]
+
+
+class Observable(object):
+    def __init__(self):
+        self._observers = []
+
+    def add_observer(self, observer):
+        if not observer in self._observers:
+            self._observers.append(observer)
+
+    def remove_observer(self, observer):
+        try:
+            self._observers.remove(observer)
+        except ValueError:
+            pass
+
+    def notify_observers(self):
+        for observer in self._observers:
+            observer.update(self)
+
+
+class MenuScreen(Observable):
+    """Represents a List with menu entries"""
+
+    def __init__(self, previous, menulist):
+        super(MenuScreen, self).__init__()
+        self.previous = previous
+        self.menulist = menulist
+        self._menu_pos = 0
+
+    @property
+    def menu_pos(self):
+        return self._menu_pos
+
+    @menu_pos.setter
+    def menu_pos(self, value):
+        oldpos = self._menu_pos
+        newpos = clamp(value, 0, LCD_ROWS - 1)
+        self._menu_pos = newpos
+        if oldpos != newpos:
+            print("notifying observers")
+            self.notify_observers()
+            """self.lcd.cursor_pos = (oldpos, 0)
+            self.lcd.write_string(self.menu_prefix)
+            self.lcd.cursor_pos = (newpos, 0)
+            self.lcd.write_string(self.menu_selected)"""
+
+    def redraw(self):
+        print("Redrawing MenuScreen: ", id(self))
+        pass
+
 
 class RotaryEncoder(object):
     def __init__(self, player):
         self.player = player
         RPIO.setup(PIN_ROTARY_B, RPIO.IN, pull_up_down=RPIO.PUD_UP, initial=RPIO.HIGH)
         RPIO.add_interrupt_callback(PIN_ROTARY_A, self.process_movement,
-                edge='falling', pull_up_down=RPIO.PUD_UP,
-                debounce_timeout_ms=15)
+                                    edge='falling', pull_up_down=RPIO.PUD_UP,
+                                    debounce_timeout_ms=15)
         RPIO.add_interrupt_callback(PIN_ROTARY_BTN, self.button_pressed,
-                edge='falling', pull_up_down=RPIO.PUD_UP,
-                debounce_timeout_ms=15)
+                                    edge='falling', pull_up_down=RPIO.PUD_UP,
+                                    debounce_timeout_ms=15)
 
     def process_movement(self, gpio_id, value):
-        pin_b = RPIO.input(PIN_ROTARY_B)
+        pin_b = RPIO.input(settings.ROTARY_PIN_B)
         if pin_b:  # Down
-            self.player.menu_pos += 1
+            self.player.scroll_down()
         else:  # Up
-            self.player.menu_pos -= 1
+            self.player.scroll_up()
 
     def button_pressed(self, gpio_id, value):
         self.player.run_action()
@@ -67,31 +124,18 @@ class Player(object):
         # LCD instance
         self.lcd = lcd
 
+        self.current_menu = MenuScreen(previous=None, menulist=mainmenu)
+
         # Position in menu
         self.menu_prefix = menu_prefix
         self.menu_selected = menu_selected
-        self._menu_pos = 0
+        #self._menu_pos = 0
 
         # Loading animation
         self.welcome()
 
         # Load menu
         self.redraw()
-
-    @property
-    def menu_pos(self):
-        return self._menu_pos
-
-    @menu_pos.setter
-    def menu_pos(self, value):
-        oldpos = self._menu_pos
-        newpos = clamp(value, 0, LCD_ROWS - 1)
-        self._menu_pos = newpos
-        if oldpos != newpos:
-            self.lcd.cursor_pos = (oldpos, 0)
-            self.lcd.write_string(self.menu_prefix)
-            self.lcd.cursor_pos = (newpos, 0)
-            self.lcd.write_string(self.menu_selected)
 
     def welcome(self):
         """Draw a loading screen."""
@@ -108,22 +152,28 @@ class Player(object):
 
     def load_menu(self, menu):
         self.lcd.clear()
-        self.menu = menu
+        self.current_menu.menulist = menu
         items = menu[:4]
         for i, (label, func) in enumerate(items):
-            if i == self._menu_pos:
+            if i == self.current_menu.menu_pos:
                 line = self.menu_selected + label
             else:
                 line = self.menu_prefix + label
             self.lcd.write_string(line[:LCD_COLS] + '\n\r')
 
     def redraw(self):
-        self.load_menu(mainmenu)
+        self.load_menu(self.current_menu.menulist)
 
     def run_action(self):
-        item = self.menu[self.menu_pos]
+        item = self.current_menu[self.menu_pos]
         function = item[-1]
         function(self.lcd)
+
+    def scroll_up(self):
+        self.current_menu.menu_pos -= 1
+
+    def scroll_down(self):
+        self.current_menu.menu_pos += 1
 
 
 if __name__ == '__main__':
@@ -132,8 +182,9 @@ if __name__ == '__main__':
     RPIO.setwarnings(False)
 
     # Initialize LCD
-    lcd = CharLCD(pin_rs=PIN_LCD_RS, pin_rw=PIN_LCD_RW, pin_e=PIN_LCD_E,
-            pins_data=PIN_LCD_DATA, numbering_mode=NUMBERING_MODE)
+    data_bus = [settings.DISPLAY_PIN_DB1, settings.DISPLAY_PIN_DB2, settings.DISPLAY_PIN_DB3, settings.DISPLAY_PIN_DB4]
+    lcd = CharLCD(pin_rs=settings.DISPLAY_PIN_RS, pin_rw=settings.DISPLAY_PIN_RW, pin_e=settings.DISPLAY_PIN_E,
+                  pins_data=data_bus, numbering_mode=NUMBERING_MODE)
 
     p = Player(lcd)
     r = RotaryEncoder(p)
