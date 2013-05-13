@@ -98,11 +98,11 @@ class MenuScreen(Observable):
 class RotaryEncoder(object):
     def __init__(self, player):
         self.player = player
-        RPIO.setup(PIN_ROTARY_B, RPIO.IN, pull_up_down=RPIO.PUD_UP, initial=RPIO.HIGH)
-        RPIO.add_interrupt_callback(PIN_ROTARY_A, self.process_movement,
+        RPIO.setup(settings.ROTARY_PIN_B, RPIO.IN, pull_up_down=RPIO.PUD_UP, initial=RPIO.HIGH)
+        RPIO.add_interrupt_callback(settings.ROTARY_PIN_A, self.process_movement,
                                     edge='falling', pull_up_down=RPIO.PUD_UP,
                                     debounce_timeout_ms=15)
-        RPIO.add_interrupt_callback(PIN_ROTARY_BTN, self.button_pressed,
+        RPIO.add_interrupt_callback(settings.ROTARY_PIN_BUTTON, self.button_pressed,
                                     edge='falling', pull_up_down=RPIO.PUD_UP,
                                     debounce_timeout_ms=15)
 
