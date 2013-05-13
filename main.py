@@ -125,6 +125,7 @@ class Player(object):
         self.lcd = lcd
 
         self.current_menu = MenuScreen(previous=None, menulist=mainmenu)
+        self.current_menu.add_observer(self)
 
         # Position in menu
         self.menu_prefix = menu_prefix
@@ -149,6 +150,9 @@ class Player(object):
             lcd.write(0)
             lcd.write(0)
             time.sleep(0.1)
+
+    def update(self):
+        self.redraw()
 
     def load_menu(self, menu):
         self.lcd.clear()
