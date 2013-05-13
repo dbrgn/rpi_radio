@@ -8,6 +8,8 @@ import RPIO
 import settings
 from RPLCD import CharLCD
 
+from menuscreen import MenuScreen
+
 from functions import shutdown
 from utils import clamp
 
@@ -31,68 +33,25 @@ def nop(*args):
     pass
 
 
-mainmenu = [
-    ('Radio', nop),
-    ('Shutdown', shutdown),
-    ('Foo', nop),
-    ('Bar', nop),
-    ('Baz', nop),
-]
-
+# (Text, function, menulist)
 submenu = [
-    ('Sub1', nop),
-    ('Sub2', nop),
+    ('Sub1', nop, None),
+    ('Sub2', nop, None),
+]
+
+mainmenu = [
+    ('Radio', nop, MenuScreen(previous=None, menulist=submenu)),
+    ('Shutdown', shutdown, None),
+    ('Foo', nop, None),
+    ('Bar', nop, None),
+    ('Baz', nop, None),
 ]
 
 
-class Observable(object):
-    def __init__(self):
-        self._observers = []
-
-    def add_observer(self, observer):
-        if not observer in self._observers:
-            self._observers.append(observer)
-
-    def remove_observer(self, observer):
-        try:
-            self._observers.remove(observer)
-        except ValueError:
-            pass
-
-    def notify_observers(self):
-        for observer in self._observers:
-            observer.update()
-
-
-class MenuScreen(Observable):
-    """Represents a List with menu entries"""
-
-    def __init__(self, previous, menulist):
-        super(MenuScreen, self).__init__()
-        self.previous = previous
-        self.menulist = menulist
-        self._menu_pos = 0
-
-    @property
-    def menu_pos(self):
-        return self._menu_pos
-
-    @menu_pos.setter
-    def menu_pos(self, value):
-        oldpos = self._menu_pos
-        newpos = clamp(value, 0, LCD_ROWS - 1)
-        self._menu_pos = newpos
-        if oldpos != newpos:
-            print("notifying observers")
-            self.notify_observers()
-            """self.lcd.cursor_pos = (oldpos, 0)
-            self.lcd.write_string(self.menu_prefix)
-            self.lcd.cursor_pos = (newpos, 0)
-            self.lcd.write_string(self.menu_selected)"""
-
-    def redraw(self):
-        print("Redrawing MenuScreen: ", id(self))
-        pass
+class MenuEntry(object):
+    def __init__(self, action, menu_screen):
+        self.action = action
+        self.menu_screen = menu_screen
 
 
 class RotaryEncoder(object):
@@ -158,7 +117,7 @@ class Player(object):
         self.lcd.clear()
         self.current_menu.menulist = menu
         items = menu[:4]
-        for i, (label, func) in enumerate(items):
+        for i, (label, func, menulist) in enumerate(items):
             if i == self.current_menu.menu_pos:
                 line = self.menu_selected + label
             else:
@@ -171,8 +130,14 @@ class Player(object):
     def run_action(self):
         item = self.current_menu.menulist[self.current_menu.menu_pos]
 
-        function = item[-1]
+        function = item[-2]
         function(self.lcd)
+        self.current_menu.remove_observer(self)
+        self.current_menu = item[-1]
+        self.current_menu.add_observer(self)
+
+        #Update Screen with submenu
+        self.redraw()
 
     def scroll_up(self):
         self.current_menu.menu_pos -= 1
