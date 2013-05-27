@@ -25,22 +25,44 @@
                         192.168.x.x
                     </p>
                     <ul class="nav">
-                        <li class="active"><a href="#">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                        <li class="active"><a href="{{ url_for('dashboard') }}">Übersicht</a></li>
+                        <li><a href="{{ url_for('config_wlan') }}">WLAN</a></li>
+                        <li><a href="{{ url_for('config_radio') }}">Radio</a></li>
+                        <li><a href="{{ url_for('config_alarm') }}">Wecker</a></li>
                     </ul>
-                </div><!--/.nav-collapse -->
+                </div>
             </div>
         </div>
     </div>
 
     <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="well sidebar-nav">
+                    <ul class="nav nav-list">
+                        <li class="nav-header">Dashboard</li>
+                        <li class="active"><a href="{{ url_for('dashboard') }}">Übersicht</a></li>
+                        <li class="nav-header">Konfiguration</li>
+                        <li><a href="{{ url_for('config_wlan') }}">WLAN</a></li>
+                        <li><a href="{{ url_for('config_radio') }}">Radio</a></li>
+                        <li><a href="{{ url_for('config_alarm') }}">Wecker</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="span9">
+                {% for message in get_flashed_messages() %}
+                    <div class=flash>{{ message }}</div>
+                {% endfor %}
 
-        {% for message in get_flashed_messages() %}
-            <div class=flash>{{ message }}</div>
-        {% endfor %}
+                {% block body %}{% endblock %}
+            </div>
+        </div>
 
-        {% block body %}{% endblock %}
+        <hr>
+
+        <footer>
+            <p>Powered by https://github.com/dbrgn/rpi_radio</p>
+        </footer>
 
     </div>
 
