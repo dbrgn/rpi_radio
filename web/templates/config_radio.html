@@ -1,5 +1,17 @@
 {% extends 'layout.html' %}
+{% set active_page = 'config_radio' %}
 
 {% block body %}
     <h1>Radiostationen</h1>
+
+    {% if 'stations' in config and config.stations %}
+        <ul>
+            {% for station in config.stations %}
+                <li>{{ station.name }}: {{ station.url|urlize }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Keine Radiostationen gefunden.</p>
+    {% endif %}
+
 {% endblock %}

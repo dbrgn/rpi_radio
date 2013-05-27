@@ -1,5 +1,90 @@
 {% extends 'layout.html' %}
+{% set active_page = 'config_wlan' %}
 
 {% block body %}
     <h1>WLAN Konfiguration</h1>
+
+    <form class="form-horizontal">
+        <fieldset>
+            <legend>Verbindungstyp</legend>
+
+            <label class="radio">
+                <input type="radio" name="type" id="type-dhcp" value="dhcp" {% if config.type == 'dhcp' %}checked{% endif %}>
+                DHCP
+            </label>
+
+            <label class="radio">
+                <input type="radio" name="type" id="type-static" value="static" {% if config.type == 'static' %}checked{% endif %}>
+                Statische IP
+            </label>
+        </fieldset>
+
+        <fieldset class="static-config" {% if config.type != 'static' %}style="display: none;"{% endif %}>
+            <legend>Statische IP</legend>
+
+            <div class="control-group">
+                <label class="control-label" for="ip">IP Adresse</label>
+                <div class="controls">
+                    <input type="text" id="ip" value="{{ config.ip }}">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="netmask">Subnetzmaske</label>
+                <div class="controls">
+                    <input type="text" id="netmask" value="{{ config.netmask }}">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="gateway">Standardgateway</label>
+                <div class="controls">
+                    <input type="text" id="gateway" value="{{ config.gateway }}">
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> Speichern</button>
+            <button type="button" class="btn reset"><i class="icon-refresh"></i> Reset</button>
+        </div>
+    </form>
+
+    <script>
+        $('input[type=radio][name=type]').change(function() {
+
+            // Show/hide static ip configuration
+            if ($('#type-static').is(':checked')) {
+                $('fieldset.static-config').show('fast');
+            } else {
+                $('fieldset.static-config').hide('fast');
+            }
+
+        });
+        $(document).ready(function() {
+
+            // Reset form
+            $('button.reset').click(function() {
+                console.log('clicked');
+                var form = $(this).parents('form');
+                form.find('input[type=text]').each(function() {
+                    $(this).val($(this).attr('value'));
+                });
+                form.find('input[type=radio]').each(function() {
+                    if ($(this).attr('checked') == 'checked') {
+                        if ( ! $(this).prop('checked')) {
+                            $(this).prop('checked', true);
+                            $(this).trigger('change');
+                        }
+                    } else {
+                        if ($(this).prop('checked')) {
+                            $(this).prop('checked', false);
+                            $(this).trigger('change');
+                        }
+                    }
+                });
+            });
+
+        });
+    </script>
 {% endblock %}

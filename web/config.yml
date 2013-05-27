@@ -1,0 +1,32 @@
+wlan:
+    type: static
+    ip: 192.168.1.135
+    netmask: 255.255.255.0
+    gateway: 192.168.1.1
+radio:
+    stations:
+        - name: Hauraki
+          url: http://radionetworknz-ice.streamguys.com:80/hkonline.mp3
+        - name: GLT Blues Radio Station
+          url: http://wgltradio.ilstu.edu:8000/wgltblues.mp3
+        - name: Freebird - ROCKS!!!
+          url: http://freebird.gotdns.com:8000
+        - name: Swiss Blues
+          url: http://stream.laut.fm/rock-the-blues?type=http
+        - name: Blues Fan
+          url: http://stream.laut.fm/bluesfan?type=http
+        - name: CCRadio
+          url: http://stream.laut.fm/ccradio
+        - name: Truckerladen
+          url: http://stream.laut.fm/truckerladen
+        - name: Bluesclub
+          url: http://stream.laut.fm/bluesclub
+        - name: Rhein Hessen Rocks
+          url: http://stream.laut.fm/rheinhessenrocks
+        - name: Gitarre FM
+          url: http://stream.laut.fm/gitarrefm
+        - name: Dorfradio Burghausen
+          url: http://stream.laut.fm/dorfradio-burghausen
+alarms:
+    - time: 07:25
+      sound: alarm.mp3

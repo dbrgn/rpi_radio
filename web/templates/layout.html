@@ -1,3 +1,14 @@
+{% set navigation = [
+    ('Dashboard', [
+        ('dashboard', 'Übersicht'),
+    ]),
+('Konfiguration', [
+    ('config_wlan', 'WLAN'),
+    ('config_radio', 'Radio'),
+    ('config_alarm', 'Wecker'),
+]),
+] -%}
+{% set active_page = active_page|default('dashboard') -%}
 <!DOCTYPE html>
 <head>
     <title>RPI Radio</title>
@@ -8,44 +19,46 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-responsive.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='js/html5shiv.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 </head>
-<body>
+<body class="page-{{ active_page }}">
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container-fluid">
-                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="brand" href="#">RPI Radio</a>
-                <div class="nav-collapse collapse">
-                    <p class="navbar-text pull-right">
-                        192.168.x.x
-                    </p>
-                    <ul class="nav">
-                        <li class="active"><a href="{{ url_for('dashboard') }}">Übersicht</a></li>
-                        <li><a href="{{ url_for('config_wlan') }}">WLAN</a></li>
-                        <li><a href="{{ url_for('config_radio') }}">Radio</a></li>
-                        <li><a href="{{ url_for('config_alarm') }}">Wecker</a></li>
-                    </ul>
-                </div>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="brand" href="#">RPI Radio</a>
+            <div class="nav-collapse collapse">
+                <p class="navbar-text pull-right">
+                    192.168.x.x
+                </p>
+                <ul class="nav">
+                    {% for category, items in navigation %}
+                        {% for id, label in items %}
+                            <li{% if id == active_page %} class="active"{% endif %}><a href="{{ url_for(id) }}">{{ label }}</a></li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span3">
-                <div class="well sidebar-nav">
-                    <ul class="nav nav-list">
-                        <li class="nav-header">Dashboard</li>
-                        <li class="active"><a href="{{ url_for('dashboard') }}">Übersicht</a></li>
-                        <li class="nav-header">Konfiguration</li>
-                        <li><a href="{{ url_for('config_wlan') }}">WLAN</a></li>
-                        <li><a href="{{ url_for('config_radio') }}">Radio</a></li>
-                        <li><a href="{{ url_for('config_alarm') }}">Wecker</a></li>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="well sidebar-nav">
+                <ul class="nav nav-list">
+                    {% for category, items in navigation %}
+                        <li class="nav-header">{{ category }}</li>
+                        {% for id, label in items %}
+                            <li{% if id == active_page %} class="active"{% endif %}><a href="{{ url_for(id) }}">{{ label }}</a></li>
+                        {% endfor %}
+                    {% endfor %}
                     </ul>
                 </div>
             </div>
@@ -66,6 +79,5 @@
 
     </div>
 
-    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 </body>
