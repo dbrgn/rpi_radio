@@ -39,3 +39,6 @@ nosetests.xml
 *.dvi
 *.log
 *.aux
+
+# Config
+web/config.yml

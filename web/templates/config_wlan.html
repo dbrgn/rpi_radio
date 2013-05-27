@@ -4,7 +4,7 @@
 {% block body %}
     <h1>WLAN Konfiguration</h1>
 
-    <form class="form-horizontal">
+    <form class="form-horizontal" method="post">
         <fieldset>
             <legend>Verbindungstyp</legend>
 
@@ -25,21 +25,21 @@
             <div class="control-group">
                 <label class="control-label" for="ip">IP Adresse</label>
                 <div class="controls">
-                    <input type="text" id="ip" value="{{ config.ip }}">
+                    <input type="text" name="ip" id="ip" value="{{ config.ip }}">
                 </div>
             </div>
 
             <div class="control-group">
                 <label class="control-label" for="netmask">Subnetzmaske</label>
                 <div class="controls">
-                    <input type="text" id="netmask" value="{{ config.netmask }}">
+                    <input type="text" name="netmask" id="netmask" value="{{ config.netmask }}">
                 </div>
             </div>
 
             <div class="control-group">
                 <label class="control-label" for="gateway">Standardgateway</label>
                 <div class="controls">
-                    <input type="text" id="gateway" value="{{ config.gateway }}">
+                    <input type="text" name="gateway" id="gateway" value="{{ config.gateway }}">
                 </div>
             </div>
         </fieldset>
@@ -51,16 +51,33 @@
     </form>
 
     <script>
-        $('input[type=radio][name=type]').change(function() {
 
-            // Show/hide static ip configuration
+        // Show/hide static ip configuration
+        $('input[type=radio][name=type]').change(function() {
             if ($('#type-static').is(':checked')) {
                 $('fieldset.static-config').show('fast');
             } else {
                 $('fieldset.static-config').hide('fast');
             }
-
         });
+
+        // Auto-fill gateway
+        $('input#ip').change(function() {
+            var ip = $(this);
+            var netmask = $('input#netmask');
+            var gateway = $('input#gateway');
+            var ip_dots = ip.val().match(/\./g);
+            if (ip_dots && ip_dots.length == 3) {  // Valid IP
+                if (netmask.val() == '') {
+                    netmask.val('255.255.255.0');
+                }
+                if (gateway.val() == '') {
+                    var parts = ip.val().split('.', 3);
+                    gateway.val(parts[0] + '.' + parts[1] + '.' + parts[2] + '.1');
+                }
+            }
+        });
+
         $(document).ready(function() {
 
             // Reset form
