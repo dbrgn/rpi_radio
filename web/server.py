@@ -21,7 +21,10 @@ Configuration variables:
 """
 from __future__ import print_function, division, absolute_import, unicode_literals
 
+import socket
+
 import yaml
+import netifaces
 from flask import Flask, g, request, flash, url_for, redirect, render_template
 from werkzeug.exceptions import BadRequest
 
@@ -49,6 +52,15 @@ def write_config(data):
 @app.before_request
 def before_request():
     g.config = get_config()
+
+
+@app.context_processor
+def add_ip_addr():
+    addr = netifaces.ifaddresses('wlan0')
+    if socket.AF_INET in addr:
+        return {'ip': addr[socket.AF_INET][0]['addr']}
+    elif socket.AF_INET6 in addr:
+        return {'ip': addr[socket.AF_INET6][0]['addr']}
 
 
 ### Views ###

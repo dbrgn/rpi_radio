@@ -34,7 +34,7 @@
             <a class="brand" href="#">RPI Radio</a>
             <div class="nav-collapse collapse">
                 <p class="navbar-text pull-right">
-                    192.168.x.x
+                    Aktuelle IP: {{ ip|default('Unbekannt') }}
                 </p>
                 <ul class="nav">
                     {% for category, items in navigation %}
