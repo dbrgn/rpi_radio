@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+The virtual screens that are printed to the LCD.
+"""
 import os
-import sys
 import time
 
 
@@ -66,9 +69,6 @@ class ListScreen(Screen):
     def __init__(self, items):
         self.items = items
         self.pos = 0
-
-    def draw(self):
-        pass
 
     def scrollup(self):
         self.pos += 1

@@ -1,10 +1,15 @@
-from events import event_queue
-from dispatchers import Dispatcher, ButtonDispatcher, RefreshDispatcher
+# -*- coding: utf-8 -*-
+"""
+Main file, project entry point.
+"""
+import logging
+from threading import Thread
+
+import events
+import screen
+from dispatchers import DispatcherManager, ButtonDispatcher, RefreshDispatcher
 from input_worker import process_input
 from messages import ButtonInputMessage, RefreshMessage
-from threading import Thread
-import screen
-import logging
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -13,9 +18,9 @@ logger = logging.getLogger(__name__)
 def shutdown():
     logger.info("shutdown")
 
-#Initialize screen
+# Initialize screen
 first_screen = screen.ListScreen([
-    (screen.DirScreen("C:/"), "C:/"),
+    (screen.DirScreen("/home/"), "/home/"),
     (screen.TextScreen("Configscreen"), "Configuration"),
     (screen.ActionScreen("Shutdown screen", shutdown), "Shutdown screen"),
     (screen.TimeScreen(), "Time"),
@@ -23,25 +28,22 @@ first_screen = screen.ListScreen([
 
 screen_manager = screen.ScreenManager(first_screen)
 
-#Initialize dispatchers
+# Initialize dispatchers
 button_dispatcher = ButtonDispatcher(screen_manager)
 refresh_dispatcher = RefreshDispatcher(screen_manager)
 
-#Attach dispatchers
-dispatcher = Dispatcher()
+# Attach dispatchers
+dispatcher = DispatcherManager()
 dispatcher.attach(button_dispatcher, lambda m: isinstance(m, ButtonInputMessage))
 dispatcher.attach(refresh_dispatcher, lambda m: isinstance(m, RefreshMessage))
 
-"""
-use the following numbers to emulate button input:
- 3: exit to parent screen, 2: scroll up, 1: scroll down, 0: enter
-"""
+# Use the following numbers to emulate button input:
+# 3: exit to parent screen, 2: scroll up, 1: scroll down, 0: enter
 input_worker = Thread(target=process_input)
+input_worker.setDaemon(True)
 input_worker.start()
 
-#Main loop: dispatching event queue
-while True:
-    logging.info("waiting for message. events in queue: {0}".format(event_queue.qsize()))
-    message = event_queue.get()
-    logging.info("dispatching message {0}".format(message))
-    dispatcher.dispatch(message)
+# Main event loop
+loop = events.EventLoop(dispatcher)
+loop.run()
+print '\nGoodbye.'

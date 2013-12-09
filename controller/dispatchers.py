@@ -1,10 +1,22 @@
-import buttons
+# -*- coding: utf-8 -*-
+"""
+Dispatchers are used to handle specific events.
+"""
 import logging
+
+import buttons
 
 logger = logging.getLogger(__name__)
 
 
-class Dispatcher(object):
+class DispatcherManager(object):
+    """Class that handles all dispatchers.
+
+    Dispatcher instances can be attached to the dispatcher manager with a
+    selector function. If the selector function returns ``True``, the
+    dispatcher is called.
+
+    """
     def __init__(self):
         self.dispatchers = []
 
