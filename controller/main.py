@@ -3,7 +3,8 @@
 Main file, project entry point.
 """
 import logging
-from threading import Thread
+import threading
+from os.path import expanduser
 
 import events
 import screen
@@ -20,7 +21,7 @@ def shutdown():
 
 # Initialize screen
 first_screen = screen.ListScreen([
-    (screen.DirScreen("/home/"), "/home/"),
+    (screen.DirScreen(expanduser('~')), "Files"),
     (screen.TextScreen("Configscreen"), "Configuration"),
     (screen.ActionScreen("Shutdown screen", shutdown), "Shutdown screen"),
     (screen.TimeScreen(), "Time"),
@@ -39,7 +40,7 @@ dispatcher.attach(refresh_dispatcher, lambda m: isinstance(m, RefreshMessage))
 
 # Use the following numbers to emulate button input:
 # 3: exit to parent screen, 2: scroll up, 1: scroll down, 0: enter
-input_worker = Thread(target=process_input)
+input_worker = threading.Thread(target=process_input)
 input_worker.setDaemon(True)
 input_worker.start()
 
