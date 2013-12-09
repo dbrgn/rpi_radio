@@ -71,11 +71,11 @@ class ListScreen(Screen):
         self.pos = 0
 
     def scrollup(self):
-        self.pos += 1
+        self.pos -= 1
         self.draw()
 
     def scrolldown(self):
-        self.pos -= 1
+        self.pos += 1
         self.draw()
 
     def draw(self):
