@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+{% set active_page = 'simulator' %}
+
+{% block body %}
+    <h1>Simulator</h1>
+
+    <div class="btn-group">
+        <button type="button" data-action="menu" class="btn event btn-default"><span class="glyphicon glyphicon-th-list"></span></button>
+        <button type="button" data-action="prev" class="btn event btn-default"><span class="glyphicon glyphicon-backward"></span></button>
+        <button type="button" data-action="play" class="btn event btn-default"><span class="glyphicon glyphicon-pause"></span></button>
+        <button type="button" data-action="next" class="btn event btn-default"><span class="glyphicon glyphicon-forward"></span></button>
+    </div>
+
+    <div class="spacer-10"></div>
+
+    <div class="btn-group">
+        <button type="button" data-action="rotary-left" class="btn event btn-default"><span class="glyphicon glyphicon-repeat mirrored"></span></button>
+        <button type="button" class="btn btn-default disabled">Navigation</button>
+        <button type="button" data-action="rotary-right" class="btn event btn-default"><span class="glyphicon glyphicon-repeat"></span></button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var socket = io.connect('http://' + document.domain + ':' + location.port + '/simulator');
+
+            socket.on('error', function(msg) {
+                console.log('ERROR: ' + msg.reason);
+            });
+
+            socket.on('success', function(msg) {
+                console.log('SUCCESS: ' + msg.action);
+            });
+
+            $('.btn.event').click(function() {
+                action = $(this).attr('data-action');
+                socket.emit('button', {action: action});
+            });
+        });
+    </script>
+{% endblock %}

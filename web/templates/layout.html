@@ -2,11 +2,14 @@
     ('Dashboard', [
         ('dashboard', 'Übersicht'),
     ]),
-('Konfiguration', [
-    ('config_wlan', 'WLAN'),
-    ('config_radio', 'Radio'),
-    ('config_alarm', 'Wecker'),
-]),
+    ('Konfiguration', [
+        ('config_wlan', 'WLAN'),
+        ('config_radio', 'Radio'),
+        ('config_alarm', 'Wecker'),
+    ]),
+    ('Tools', [
+        ('simulator', 'Simulator'),
+    ]),
 ] -%}
 {% set active_page = active_page|default('dashboard') -%}
 <!DOCTYPE html>
@@ -16,45 +19,46 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-responsive.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='js/html5shiv.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/socket.io.js') }}"></script>
 </head>
 <body class="page-{{ active_page }}">
 
-<div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container-fluid">
-            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="brand" href="#">RPI Radio</a>
-            <div class="nav-collapse collapse">
-                <p class="navbar-text pull-right">
-                    Aktuelle IP: {{ ip|default('Unbekannt') }}
-                </p>
-                <ul class="nav">
-                    {% for category, items in navigation %}
-                        {% for id, label in items %}
-                            <li{% if id == active_page %} class="active"{% endif %}><a href="{{ url_for(id) }}">{{ label }}</a></li>
-                        {% endfor %}
+            <a class="navbar-brand" href="#">RPI Radio</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <p class="navbar-text pull-right">
+                Aktuelle IP: {{ ip|default('Unbekannt') }}
+            </p>
+            <ul class="nav navbar-nav">
+                {% for category, items in navigation %}
+                    {% for id, label in items %}
+                        <li{% if id == active_page %} class="active"{% endif %}><a href="{{ url_for(id) }}">{{ label }}</a></li>
                     {% endfor %}
-                </ul>
-            </div>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>
 
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span3">
-            <div class="well sidebar-nav">
-                <ul class="nav nav-list">
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="well well-sm sidebar-nav">
+                <ul class="nav nav-pills nav-stacked">
                     {% for category, items in navigation %}
-                        <li class="nav-header">{{ category }}</li>
+                        <li class="nav-header disabled"><a>{{ category }}</a></li>
                         {% for id, label in items %}
                             <li{% if id == active_page %} class="active"{% endif %}><a href="{{ url_for(id) }}">{{ label }}</a></li>
                         {% endfor %}
@@ -62,7 +66,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="span9">
+            <div class="col-md-9">
                 {% for category, message in get_flashed_messages(with_categories=True) %}
                     <div class="alert
                     {% if category == 'error' %}alert-error
@@ -83,4 +87,6 @@
     </div>
 
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
 </body>

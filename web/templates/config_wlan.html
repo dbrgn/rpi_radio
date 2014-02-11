@@ -4,41 +4,45 @@
 {% block body %}
     <h1>WLAN Konfiguration</h1>
 
-    <form class="form-horizontal" method="post">
+    <form class="form-horizontal" method="post" role="form">
         <fieldset>
             <legend>WLAN-Netz</legend>
 
-            <div class="control-group">
-                <label class="control-label">Verschlüsselungs-Typ</label>
-                <div class="controls">
-                    <input type="radio" name="proto" id="proto-wpa" value="WPA" {% if config.proto == 'WPA' %}checked{% endif %}>
-                    <label for="proto-wpa">WPA</label>
-                    <input type="radio" name="proto" id="proto-wpa2" value="RSN" {% if config.proto == 'RSN' %}checked{% endif %}>
-                    <label for="proto-wpa2">WPA2</label>
+            <div class="form-group">
+                <label class="control-label col-sm-2">Verschlüsselung</label>
+                <div class="col-sm-10">
+                    <div class="radio">
+                        <input type="radio" name="proto" id="proto-wpa" value="WPA" {% if config.proto == 'WPA' %}checked{% endif %}>
+                        <label for="proto-wpa">WPA</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="proto" id="proto-wpa2" value="RSN" {% if config.proto == 'RSN' %}checked{% endif %}>
+                        <label for="proto-wpa2">WPA2</label>
+                    </div>
                 </div>
             </div>
 
-            <div class="control-group">
-                <label class="control-label" for="ssid">SSID</label>
-                <div class="controls">
-                    <input type="text" name="ssid" id="ssid" value="{{ config.ssid }}">
-                    <p>Der Name des WLAN-Netzes.</p>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="ssid">SSID</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="ssid" id="ssid" value="{{ config.ssid }}">
+                    <span class="help-block">Der Name des WLAN-Netzes.</span>
                 </div>
             </div>
 
-            <div class="control-group">
-                <label class="control-label" for="bssid">BSSID</label>
-                <div class="controls">
-                    <input type="text" name="bssid" id="bssid" value="{{ config.bssid }}">
-                    <p>Optional. Hier kann die MAC-Adresse des Access Points festgesetzt werden.</p>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="bssid">BSSID</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="bssid" id="bssid" value="{{ config.bssid }}">
+                    <span class="help-block">Optional. Hier kann die MAC-Adresse des Access Points festgesetzt werden.</span>
                 </div>
             </div>
 
-            <div class="control-group">
-                <label class="control-label" for="password">Passwort</label>
-                <div class="controls">
-                    <input type="password" name="password" id="password" value="{{ config.password }}">
-                    <p>Das WLAN-Passwort.</p>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="password">Passwort</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" name="password" id="password" value="{{ config.password }}">
+                    <span class="help-block">Das WLAN-Passwort.</span>
                 </div>
             </div>
         </fieldset>
@@ -60,21 +64,21 @@
         <fieldset class="static-config {% if config.type != 'static' %}hidden{% endif %}">
             <legend>Statische IP</legend>
 
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label" for="ip">IP Adresse</label>
                 <div class="controls">
                     <input type="text" name="ip" id="ip" value="{{ config.ip }}">
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label" for="netmask">Subnetzmaske</label>
                 <div class="controls">
                     <input type="text" name="netmask" id="netmask" value="{{ config.netmask }}">
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label" for="gateway">Standardgateway</label>
                 <div class="controls">
                     <input type="text" name="gateway" id="gateway" value="{{ config.gateway }}">
