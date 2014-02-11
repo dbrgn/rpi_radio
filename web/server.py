@@ -21,18 +21,23 @@ Configuration variables:
 """
 from __future__ import print_function, division, absolute_import, unicode_literals
 
+import struct
 import socket
 
 import yaml
 import netifaces
-from flask import Flask, g, request, flash, url_for, redirect, render_template
 from werkzeug.exceptions import BadRequest
+from flask import Flask, g, request, flash, url_for, redirect, render_template
+from flask.ext.socketio import SocketIO, emit
 
+import netinput
 from utils import is_valid_ipv4
 
 CONFIG = 'config.yml'
 
 app = Flask(__name__)
+app.secret_key = 'DEBUG-TODO'
+socketio = SocketIO(app)
 
 
 ### Config parsing ###
@@ -135,13 +140,41 @@ def config_radio():
 def config_alarm():
     return render_template('config_alarm.html', config=g.config.get('alarm'))
 
+
 @app.route('/simulator/', methods=['GET'])
 def simulator():
     return render_template('simulator.html')
 
 
-### Dev Server ###
+### SocketIO Endpoints ###
+
+@socketio.on('button', namespace='/simulator')
+def socketio_button(message):
+    action = message.get('action')
+    if not action:
+        emit('error', {'reason': 'Action not provided.'})
+        return
+
+    if action in ['play', 'prev', 'next', 'menu']:
+        msgtype = netinput.MessageType.button_input
+        payload = netinput.ButtonInput[action]
+        fmt = b'!BBBB'
+    elif action in ['rotary-right', 'rotary-left']:
+        msgtype = netinput.MessageType.rotary_input
+        payload = 1 if action == 'rotary-right' else -1
+        fmt = b'!BBBb'
+    else:
+        emit('error', {'reason': 'Unknown action.'})
+        return
+
+    msg = struct.pack(fmt, netinput.Magic.start, msgtype, 1, payload)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.sendto(msg, ('127.0.0.1', 4242))
+
+    emit('success', {'action': action})
+
+
+### Server ###
 
 if __name__ == '__main__':
-    app.secret_key = 'DEBUG-TODO'
-    app.run(debug=True)
+    socketio.run(app)
