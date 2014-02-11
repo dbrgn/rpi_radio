@@ -61,6 +61,8 @@ def add_ip_addr():
         return {'ip': addr[socket.AF_INET][0]['addr']}
     elif socket.AF_INET6 in addr:
         return {'ip': addr[socket.AF_INET6][0]['addr']}
+    else:
+        return {'ip': 'Keine'}
 
 
 ### Views ###
@@ -84,15 +86,24 @@ def config_wlan():
 
         # Process and validate data
         connection_type = request.form.get('type')
+
+        config['proto'] = request.form.get('proto')
+        if config['proto'] is None:
+            flash('Keinen Verschlüsselungs-Typ gewählt.')
+            error = True
+        config['ssid'] = request.form.get('ssid')
+        config['bssid'] = request.form.get('bssid')
+        config['password'] = request.form.get('password')
+        config['key_mgmt'] = 'WPA-PSK'  # Only type currently supported
         if connection_type == 'dhcp':
-            config = {'type': 'dhcp'}
+            config['type'] = 'dhcp'
         elif connection_type == 'static':
-            config = {
+            config.update({
                 'type': 'static',
                 'ip': request.form.get('ip'),
                 'netmask': request.form.get('netmask'),
                 'gateway': request.form.get('gateway'),
-            }
+            })
             if not is_valid_ipv4(config['ip']):
                 flash('Ungültige IP Adresse.', 'error')
                 error = True

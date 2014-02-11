@@ -6,6 +6,44 @@
 
     <form class="form-horizontal" method="post">
         <fieldset>
+            <legend>WLAN-Netz</legend>
+
+            <div class="control-group">
+                <label class="control-label">Verschlüsselungs-Typ</label>
+                <div class="controls">
+                    <input type="radio" name="proto" id="proto-wpa" value="WPA" {% if config.proto == 'WPA' %}checked{% endif %}>
+                    <label for="proto-wpa">WPA</label>
+                    <input type="radio" name="proto" id="proto-wpa2" value="RSN" {% if config.proto == 'RSN' %}checked{% endif %}>
+                    <label for="proto-wpa2">WPA2</label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="ssid">SSID</label>
+                <div class="controls">
+                    <input type="text" name="ssid" id="ssid" value="{{ config.ssid }}">
+                    <p>Der Name des WLAN-Netzes.</p>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="bssid">BSSID</label>
+                <div class="controls">
+                    <input type="text" name="bssid" id="bssid" value="{{ config.bssid }}">
+                    <p>Optional. Hier kann die MAC-Adresse des Access Points festgesetzt werden.</p>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="password">Passwort</label>
+                <div class="controls">
+                    <input type="password" name="password" id="password" value="{{ config.password }}">
+                    <p>Das WLAN-Passwort.</p>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
             <legend>Verbindungstyp</legend>
 
             <label class="radio">
@@ -19,7 +57,7 @@
             </label>
         </fieldset>
 
-        <fieldset class="static-config" {% if config.type != 'static' %}style="display: none;"{% endif %}>
+        <fieldset class="static-config {% if config.type != 'static' %}hidden{% endif %}">
             <legend>Statische IP</legend>
 
             <div class="control-group">
@@ -82,7 +120,6 @@
 
             // Reset form
             $('button.reset').click(function() {
-                console.log('clicked');
                 var form = $(this).parents('form');
                 form.find('input[type=text]').each(function() {
                     $(this).val($(this).attr('value'));
