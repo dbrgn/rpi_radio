@@ -36,8 +36,11 @@ class EventLoop(object):
             logging.info('Waiting for message. events in queue: {0}'.format(event_queue.qsize()))
             try:
                 # hack: http://stackoverflow.com/q/212797/284318
+                logging.debug("pre get")
                 message = event_queue.get(timeout=1000)
+                logging.debug("post get")
             except Queue.Empty:
+                logging.debug("queue empty")
                 pass
             except KeyboardInterrupt:
                 return

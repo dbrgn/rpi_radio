@@ -1,5 +1,4 @@
-up = "2"
-down = "1"
-enter = "0"
-exit = "3"
-refresh = "4"
+MENU = 0
+PLAY = 1
+NEXT = 2
+PREVIOUS = 3
