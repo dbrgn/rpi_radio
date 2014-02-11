@@ -39,15 +39,19 @@ dispatcher = DispatcherManager()
 dispatcher.attach(button_dispatcher, lambda m: isinstance(m, ButtonInputMessage))
 dispatcher.attach(refresh_dispatcher, lambda m: isinstance(m, RefreshMessage))
 
-# Start input workers
+# Start socket input worker
 socket_input_worker = threading.Thread(target=socketinputserver.SocketInputServer(4242).run)
-serial_input_worker = threading.Thread(target=serialinputserver.SerialInputServer("COM6").run)
-
 socket_input_worker.setDaemon(True)
-serial_input_worker.setDaemon(True)
-
 socket_input_worker.start()
-serial_input_worker.start()
+
+# Start serial input worker
+try:
+    serial_input_worker = threading.Thread(target=serialinputserver.SerialInputServer("COM6").run)
+except OSError:
+    logger.warning('Could not initialize serial input worker.')
+else:
+    serial_input_worker.setDaemon(True)
+    serial_input_worker.start()
 
 # Main event loop
 logger.info("enter main loop")

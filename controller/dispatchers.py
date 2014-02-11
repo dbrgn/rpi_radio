@@ -35,13 +35,16 @@ class ButtonDispatcher(object):
 
     def dispatch(self, message):
         logger.info("got message: {0} key: {1}".format(message, message.key))
-        if message.key == buttons.exit:
-            self.screen.exit()
-        elif message.key == buttons.up:
-            self.screen.scrollup()
-        elif message.key == buttons.down:
-            self.screen.scrolldown()
-        elif message.key == buttons.enter:
+        if message.key == buttons.MENU:
+            logger.info('MENU')
+        elif message.key == buttons.PLAY:
+            logger.info('PLAY')
+        elif message.key == buttons.NEXT:
+            logger.info('NEXT')
+        elif message.key == buttons.PREVIOUS:
+            logger.info('PREVIOUS')
+        elif message.key == buttons.ROTARY:
+            logger.info('ROTARY')
             self.screen.enter()
 
 
