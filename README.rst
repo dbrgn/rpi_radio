@@ -21,9 +21,18 @@ Controller
 - ``input_worker.py``: A worker thread that listens for user input via keyboard.
   This is only used for debugging purposes.
 
+To start the controller from the command line::
+
+    python -m controller.main
+
 Web
 ---
 
 The web interface is used to configure the player, and things like WLAN.
 
 It uses Flask as a web microframework.
+
+To start the webserver from the command line::
+
+    cd web
+    python server.py
