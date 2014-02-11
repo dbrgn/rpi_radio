@@ -23,3 +23,21 @@ body {
     font-weight: bold;
     text-transform: uppercase;
 }
+
+.mirrored {
+    -moz-transform: scale(-1, 1);
+    -webkit-transform: scale(-1, 1);
+    -o-transform: scale(-1, 1);
+    -ms-transform: scale(-1, 1);
+    transform: scale(-1, 1);
+}
+
+.spacer-10 {
+    margin-top: 10px;
+}
+.spacer-30 {
+    margin-top: 30px;
+}
+.spacer-50 {
+    margin-top: 50px;
+}
