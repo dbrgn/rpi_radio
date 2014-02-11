@@ -135,6 +135,10 @@ def config_radio():
 def config_alarm():
     return render_template('config_alarm.html', config=g.config.get('alarm'))
 
+@app.route('/simulator/', methods=['GET'])
+def simulator():
+    return render_template('simulator.html')
+
 
 ### Dev Server ###
 

@@ -2,11 +2,14 @@
     ('Dashboard', [
         ('dashboard', 'Übersicht'),
     ]),
-('Konfiguration', [
-    ('config_wlan', 'WLAN'),
-    ('config_radio', 'Radio'),
-    ('config_alarm', 'Wecker'),
-]),
+    ('Konfiguration', [
+        ('config_wlan', 'WLAN'),
+        ('config_radio', 'Radio'),
+        ('config_alarm', 'Wecker'),
+    ]),
+    ('Tools', [
+        ('simulator', 'Simulator'),
+    ]),
 ] -%}
 {% set active_page = active_page|default('dashboard') -%}
 <!DOCTYPE html>
