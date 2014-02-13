@@ -32,6 +32,10 @@ The web interface is used to configure the player, and things like WLAN.
 
 It uses Flask as a web microframework.
 
+To setup::
+
+    pip install --allow-external netifaces --allow-unverified netifaces -r web/requirements.txt
+
 To start the webserver from the command line::
 
     cd web

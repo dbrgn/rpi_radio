@@ -21,6 +21,7 @@ Configuration variables:
 """
 from __future__ import print_function, division, absolute_import, unicode_literals
 
+import os.path
 import struct
 import socket
 
@@ -36,6 +37,7 @@ from utils import is_valid_ipv4
 CONFIG = 'config.yml'
 
 app = Flask(__name__)
+app.debug = True
 app.secret_key = 'DEBUG-TODO'
 socketio = SocketIO(app)
 
@@ -44,6 +46,8 @@ socketio = SocketIO(app)
 
 def get_config():
     """Open and parse config file."""
+    if not os.path.isfile(CONFIG):
+        open(CONFIG, 'a').close()
     with open(CONFIG, 'r') as configfile:
         return yaml.safe_load(configfile)
 
@@ -177,4 +181,8 @@ def socketio_button(message):
 ### Server ###
 
 if __name__ == '__main__':
+    if app.debug:
+        print('Server starting at http://localhost:5000/ in debug mode...')
+    else:
+        print('Server starting...')
     socketio.run(app)
