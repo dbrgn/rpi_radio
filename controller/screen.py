@@ -56,7 +56,7 @@ class Screen(object):
         pass
 
     def scrollup(self):
-        self.draw()
+        pass
 
     def scrolldown(self):
         pass
