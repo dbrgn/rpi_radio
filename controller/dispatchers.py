@@ -39,10 +39,13 @@ class ButtonDispatcher(object):
             logger.info('MENU')
         elif message.key == buttons.PLAY:
             logger.info('PLAY')
+            self.screen.enter()
         elif message.key == buttons.NEXT:
             logger.info('NEXT')
+            self.screen.scrolldown()
         elif message.key == buttons.PREVIOUS:
             logger.info('PREVIOUS')
+            self.screen.scrollup()
         elif message.key == buttons.ROTARY:
             logger.info('ROTARY')
             self.screen.enter()
