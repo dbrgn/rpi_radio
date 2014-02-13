@@ -6,12 +6,14 @@ import logging
 import threading
 import socket
 from os.path import expanduser
+from serial import SerialException
 
 import events
 import screen
 from dispatchers import DispatcherManager, ButtonDispatcher, RefreshDispatcher
 from input_reader import serialinputserver, socketinputserver
 from messages import ButtonInputMessage, RefreshMessage
+from lcd.bitmap_lcd import BitmapLcd
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -19,6 +21,9 @@ logger = logging.getLogger(__name__)
 
 def shutdown():
     logger.info("shutdown")
+
+# Initialize lcd screen device
+lcd_device = BitmapLcd("screen.jpg")
 
 # Initialize screen
 first_screen = screen.ListScreen([
@@ -28,7 +33,7 @@ first_screen = screen.ListScreen([
     (screen.TimeScreen(), "Time"),
 ])
 
-screen_manager = screen.ScreenManager(first_screen)
+screen_manager = screen.ScreenManager(first_screen, lcd_device)
 
 # Initialize dispatchers
 button_dispatcher = ButtonDispatcher(screen_manager)
@@ -47,7 +52,7 @@ socket_input_worker.start()
 # Start serial input worker
 try:
     serial_input_worker = threading.Thread(target=serialinputserver.SerialInputServer("COM6").run)
-except OSError:
+except (OSError, SerialException):
     logger.warning('Could not initialize serial input worker.')
 else:
     serial_input_worker.setDaemon(True)

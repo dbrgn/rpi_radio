@@ -11,7 +11,8 @@ class ScreenManager(object):
     Manages screen call stack
     """
 
-    def __init__(self, startscreen):
+    def __init__(self, startscreen, device):
+        self.device = device
         self.screen = startscreen
         self.draw()
         self.call_stack = []
@@ -21,7 +22,7 @@ class ScreenManager(object):
         self.screen = screen
 
     def draw(self):
-        self.screen.draw()
+        self.screen.draw(self)
 
     def scrollup(self):
         self.screen.scrollup()
@@ -49,7 +50,7 @@ class Screen(object):
     Represents the screen interface
     """
 
-    def draw(self):
+    def draw(self, screen_manager):
         pass
 
     def scrollup(self):
@@ -78,11 +79,13 @@ class ListScreen(Screen):
         self.pos += 1
         self.draw()
 
-    def draw(self):
+    def draw(self, screen_manager):
         for idx, (screen_object, string) in enumerate(self.items):
             if self.get_pos() == idx:
                 print "> " + string
+                screen_manager.device.draw_text(0, 0, "> " + string)
             else:
+                screen_manager.device.draw_text(0, 0, " " + string)
                 print "  " + string
 
     def get_pos(self):
@@ -110,7 +113,7 @@ class DirScreen(ListScreen):
                 return TextScreen("<empty folder>")
             return DirScreen(self.path + "/" + self.get_current_item())
 
-    def draw(self):
+    def draw(self, screen_manager):
         for idx, string in enumerate(self.items):
             if self.get_pos() == idx:
                 print "-> " + string
@@ -122,7 +125,7 @@ class FileScreen(Screen):
     def __init__(self, filename):
         self.filename = filename
 
-    def draw(self):
+    def draw(self, screen_manager):
         print "File: " + self.filename
         print "Go to parent with key 3"
 
@@ -131,7 +134,7 @@ class TextScreen(Screen):
     def __init__(self, text):
         self.text = text
 
-    def draw(self):
+    def draw(self, screen_manager):
         print "This is the {0} Text Screen".format(self.text)
 
     def enter(self):
@@ -143,13 +146,13 @@ class ActionScreen(Screen):
         self.text = text
         self.action = action
 
-    def draw(self):
+    def draw(self, screen_manager):
         print self.text
         self.action()
 
 
 class TimeScreen(Screen):
-    def draw(self):
+    def draw(self, screen_manager):
         print "======================"
         print "Time is: {0}".format(time.strftime("%H:%M:%S"))
         print "======================"
