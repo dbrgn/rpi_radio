@@ -1,0 +1,2 @@
+-r controller/requirements.txt
+-r web/requirements.txt
