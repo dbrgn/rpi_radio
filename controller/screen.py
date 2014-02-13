@@ -26,9 +26,11 @@ class ScreenManager(object):
 
     def scrollup(self):
         self.screen.scrollup()
+        self.screen.draw(self)
 
     def scrolldown(self):
         self.screen.scrolldown()
+        self.screen.draw(self)
 
     def enter(self):
         new_screen = self.screen.enter()
@@ -57,7 +59,7 @@ class Screen(object):
         self.draw()
 
     def scrolldown(self):
-        self.draw()
+        pass
 
     def enter(self):
         return None
@@ -73,11 +75,9 @@ class ListScreen(Screen):
 
     def scrollup(self):
         self.pos -= 1
-        self.draw()
 
     def scrolldown(self):
         self.pos += 1
-        self.draw()
 
     def draw(self, screen_manager):
         for idx, (screen_object, string) in enumerate(self.items):
