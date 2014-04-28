@@ -22,7 +22,6 @@ Configuration variables:
 from __future__ import print_function, division, absolute_import, unicode_literals
 
 import os.path
-import struct
 import socket
 
 import yaml
@@ -155,23 +154,24 @@ def simulator():
 @socketio.on('button', namespace='/simulator')
 def socketio_button(message):
     action = message.get('action')
+    state = message.get('state')
     if not action:
         emit('error', {'reason': 'Action not provided.'})
         return
+    if not state:
+        emit('error', {'reason': 'Button state not provided.'})
+        return
 
-    if action in ['play', 'prev', 'next', 'menu']:
-        msgtype = netinput.MessageType.button_input
-        payload = netinput.ButtonInput[action]
-        fmt = b'!BBBB'
+    if action in ['play', 'prev', 'next', 'menu', 'select', 'power']:
+        button = netinput.ButtonInput[action]
+        msg = netinput.push_button(button, netinput.ButtonState[state])
     elif action in ['rotary-right', 'rotary-left']:
-        msgtype = netinput.MessageType.rotary_input
-        payload = 1 if action == 'rotary-right' else -1
-        fmt = b'!BBBb'
+        direction = netinput.RotaryInput[action.split('-')[1]]
+        msg = netinput.rotate_encoder(direction, 1)
     else:
         emit('error', {'reason': 'Unknown action.'})
         return
 
-    msg = struct.pack(fmt, netinput.Magic.start, msgtype, 1, payload)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(msg, ('127.0.0.1', 4242))
 

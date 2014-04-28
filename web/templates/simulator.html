@@ -4,6 +4,13 @@
 {% block body %}
     <h1>Simulator</h1>
 
+    <div class="input-group col-sm-6">
+        <span class="input-group-addon">IP</span>
+        <input id="ip" type="text" class="form-control" value="::1">
+    </div>
+
+    <div class="spacer-30"></div>
+
     <div class="btn-group">
         <button type="button" data-action="menu" class="btn event btn-default"><span class="glyphicon glyphicon-th-list"></span></button>
         <button type="button" data-action="prev" class="btn event btn-default"><span class="glyphicon glyphicon-backward"></span></button>
@@ -33,9 +40,14 @@
                 console.log('SUCCESS: ' + msg.action);
             });
 
-            $('.btn.event').click(function() {
+            $('.btn.event').mousedown(function() {
                 action = $(this).attr('data-action');
-                socket.emit('button', {action: action});
+                if (action.indexOf('rotary') != 0) {
+                    socket.emit('button', {action: action, state: 'pressed'})
+                }
+            });
+            $('.btn.event').mouseup(function() {
+                socket.emit('button', {action: action, state: 'released'});
             });
         });
     </script>
